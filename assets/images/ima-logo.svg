@@ -1,0 +1,6 @@
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+    <rect width="200" height="60" fill="#ffffff"/>
+    <text x="10" y="45" font-family="Arial, sans-serif" font-weight="900" font-size="42" fill="#0A66C2" letter-spacing="-2">IMA</text>
+    <rect x="105" y="15" width="4" height="35" fill="#0A66C2" rx="2"/>
+    <circle cx="120" cy="20" r="3" fill="#0A66C2"/>
+</svg>
