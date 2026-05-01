@@ -170,12 +170,11 @@ function buildTallyUrl(answers = {}) {
     
     const summary = buildNavigatorSummary(answers);
     
-    // Using manual encoding for the content
-    const encodedSummary = encodeURIComponent(summary);
+    const params = new URLSearchParams();
+    // Using the hidden field name re-added by the user
+    params.set("navigatorSummary", summary);
     
-    // Using the exact field label "Your question" as requested by the user
-    // This will result in "Your%20question" in the final URL
-    return `${TALLY_FORM_URL}?Your%20question=${encodedSummary}`;
+    return `${TALLY_FORM_URL}?${params.toString()}`;
 }
 
 /**
