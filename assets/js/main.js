@@ -148,7 +148,8 @@ function initNavigator() {
  */
 function buildNavigatorSummary(answers = {}) {
     return [
-        "", // Space for user input at the top
+        "[ Please enter your message here ]",
+        "",
         "___",
         "Consultation summary from the Intermind Advisory Navigator:",
         "",
@@ -165,14 +166,16 @@ function buildNavigatorSummary(answers = {}) {
  * Builds the full Tally URL with encoded summary
  */
 function buildTallyUrl(answers = {}) {
-    if (!answers.challenge) return TALLY_FORM_URL;
+    if (!answers || !answers.challenge) return TALLY_FORM_URL;
     
     const summary = buildNavigatorSummary(answers);
-    const params = new URLSearchParams();
-    // Tally pre-fills fields via slugified labels, e.g., "Your question" -> "Your_question"
-    params.set("Your_question", summary);
     
-    return `${TALLY_FORM_URL}?${params.toString()}`;
+    // Using manual encoding for the content
+    const encodedSummary = encodeURIComponent(summary);
+    
+    // Using the exact field label "Your question" as requested by the user
+    // This will result in "Your%20question" in the final URL
+    return `${TALLY_FORM_URL}?Your%20question=${encodedSummary}`;
 }
 
 /**
