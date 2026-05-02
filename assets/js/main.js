@@ -31,13 +31,14 @@ function initNavigator() {
     
     let currentStepIndex = 0;
     const answers = {
-        challenge: '',
+        topic: '',
         situation: '',
+        outcome: '',
         support: '',
-        timeline: ''
+        timing: ''
     };
 
-    const stepKeys = ['challenge', 'situation', 'support', 'timeline'];
+    const stepKeys = ['topic', 'situation', 'outcome', 'support', 'timing'];
 
     // Option selection
     steps.forEach((step, index) => {
@@ -49,12 +50,30 @@ function initNavigator() {
                 // Select this one
                 btn.classList.add('selected');
                 // Store answer
-                answers[stepKeys[index]] = btn.textContent.trim();
+                if (stepKeys[index]) {
+                    answers[stepKeys[index]] = btn.textContent.trim();
+                }
                 // Enable next button
                 nextBtn.disabled = false;
             });
         });
     });
+
+    function getRecommendedNextStep(answers) {
+        if (answers.topic === 'AI advisory') {
+            return 'AI opportunity and governance consultation';
+        }
+        if (answers.topic === 'Robotics & automation') {
+            return 'Automation potential and feasibility discussion';
+        }
+        if (answers.topic === 'Interim management or special project') {
+            return 'Confidential scoping call for temporary senior support';
+        }
+        if (answers.topic === 'Not sure yet' || answers.support === 'Confidential first conversation before defining the scope') {
+            return 'Confidential orientation conversation';
+        }
+        return 'Confidential consultation';
+    }
 
     function updateStep() {
         steps.forEach((step, index) => {
@@ -82,28 +101,33 @@ function initNavigator() {
         if (!summaryContainer) return;
         
         const tallyUrl = buildTallyUrl(answers);
+        const nextStep = getRecommendedNextStep(answers);
         
         summaryContainer.innerHTML = `
             <div class="summary-card">
                 <div class="summary-item">
-                    <span class="summary-label">Challenge area</span>
-                    <span class="summary-value">${answers.challenge}</span>
+                    <span class="summary-label">Primary topic</span>
+                    <span class="summary-value">${answers.topic}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Current need</span>
+                    <span class="summary-label">Current situation</span>
                     <span class="summary-value">${answers.situation}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Suggested support</span>
+                    <span class="summary-label">Desired outcome</span>
+                    <span class="summary-value">${answers.outcome}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Preferred support</span>
                     <span class="summary-value">${answers.support}</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Time horizon</span>
-                    <span class="summary-value">${answers.timeline}</span>
+                    <span class="summary-label">Timing / readiness</span>
+                    <span class="summary-value">${answers.timing}</span>
                 </div>
                 <div class="summary-item" style="margin-top: 2rem; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 1.5rem;">
                     <span class="summary-label">Recommended next step</span>
-                    <span class="summary-value">Confidential consultation</span>
+                    <span class="summary-value">${nextStep}</span>
                 </div>
             </div>
             <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-top: 1.5rem; text-align: center;">
@@ -147,18 +171,30 @@ function initNavigator() {
  * Builds the plain text summary for Tally
  */
 function buildNavigatorSummary(answers = {}) {
+    const nextStep = [
+        answers.topic === 'AI advisory' ? 'AI opportunity and governance consultation' : null,
+        answers.topic === 'Robotics & automation' ? 'Automation potential and feasibility discussion' : null,
+        answers.topic === 'Interim management or special project' ? 'Confidential scoping call for temporary senior support' : null,
+        (answers.topic === 'Not sure yet' || answers.support === 'Confidential first conversation before defining the scope') ? 'Confidential orientation conversation' : null,
+        'Confidential consultation'
+    ].find(s => s !== null);
+
     return [
         "[ Please enter your message here ]",
         "",
         "___",
         "Consultation summary from the Intermind Advisory Navigator:",
         "",
-        `Challenge area: ${answers.challenge || "-"}`,
-        `Current situation: ${answers.situation || "-"}`,
-        `Suggested support: ${answers.support || "-"}`,
-        `Time horizon: ${answers.timeline || "-"}`,
+        `Primary topic: ${answers.topic || "-"}`,
+        `Current business situation: ${answers.situation || "-"}`,
+        `Desired outcome: ${answers.outcome || "-"}`,
+        `Preferred support mode: ${answers.support || "-"}`,
+        `Timing / readiness: ${answers.timing || "-"}`,
         "",
-        "Recommended next step: Confidential consultation"
+        `Recommended next step: ${nextStep}`,
+        "",
+        "Context:",
+        "The visitor used the Advisory Navigator to describe a potential consulting need. The answers indicate the business topic, current situation, desired outcome, preferred support type and approximate timing."
     ].join("\n");
 }
 
@@ -166,7 +202,7 @@ function buildNavigatorSummary(answers = {}) {
  * Builds the full Tally URL with encoded summary
  */
 function buildTallyUrl(answers = {}) {
-    if (!answers || !answers.challenge) return TALLY_FORM_URL;
+    if (!answers || !answers.topic) return TALLY_FORM_URL;
     
     const summary = buildNavigatorSummary(answers);
     
