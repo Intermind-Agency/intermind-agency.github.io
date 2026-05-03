@@ -144,11 +144,15 @@ header .container {
 .logo-link {
     display: flex;
     align-items: center;
+    margin-right: 4rem; /* Ensures enough space to the first menu item */
 }
 
-.logo-img {
-    height: 3.25rem; /* Adjusted to match button height (padding 1.125 * 2 + font-size 1) */
-    width: auto;
+.brand-signature {
+    font-size: 1.5rem; /* Increased from 1.25rem */
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-accent); /* Changed to accent blue */
+    white-space: nowrap;
 }
 
 .nav-links {
